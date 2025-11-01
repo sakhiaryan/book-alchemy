@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ book.title }} – Details</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+  <h1>📖 {{ book.title }}</h1>
+  <nav>
+    <a class="button" href="{{ url_for('home') }}">⬅ Back</a>
+    {% if book.author %}
+      <a class="button" href="{{ url_for('author_detail', author_id=book.author.id) }}">Author Page</a>
+    {% endif %}
+  </nav>
+</header>
+
+<ul class="kv">
+  <li><strong>Author:</strong> {{ book.author.name if book.author else '—' }}</li>
+  <li><strong>Year:</strong> {{ book.publication_year or '—' }}</li>
+  <li><strong>ISBN:</strong> {{ book.isbn or '—' }}</li>
+  <li><strong>Rating:</strong> {{ book.rating or '—' }}</li>
+</ul>
+
+<h3>Rate this book</h3>
+<form method="POST" action="{{ url_for('rate_book', book_id=book.id) }}" class="inline">
+  <input type="number" min="1" max="10" name="rating" placeholder="1-10" required>
+  <button type="submit">Save Rating</button>
+</form>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="flash">
+      {% for m in messages %}
+        <li>{{ m }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Recommendation</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+  <h1>💡 Recommendation</h1>
+  <nav><a class="button" href="{{ url_for('home') }}">⬅ Back</a></nav>
+</header>
+
+{% if book %}
+  <p>We recommend: <a href="{{ url_for('book_detail', book_id=book.id) }}">{{ book.title }}</a>
+    {% if book.author %} by {{ book.author.name }}{% endif %}
+    {% if book.rating %}(rating {{ book.rating }}){% endif %}.
+  </p>
+{% else %}
+  <p>No books yet. Add some first 🙂</p>
+{% endif %}
+</body>
+</html>

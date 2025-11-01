@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Add Book – Book Alchemy</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+  <h1>➕ Add Book</h1>
+  <nav>
+    <a class="button" href="{{ url_for('home') }}">⬅ Back to Library</a>
+    <a class="button" href="{{ url_for('add_author') }}">Add Author</a>
+  </nav>
+</header>
+
+{% if msg %}
+  <p class="msg">{{ msg }}</p>
+{% endif %}
+
+{% if not authors %}
+  <p class="msg">No authors yet. Please <a href="{{ url_for('add_author') }}">add an author</a> first.</p>
+{% endif %}
+
+<form method="POST" action="{{ url_for('add_book') }}">
+  <label for="title">Title</label>
+  <input id="title" name="title" type="text" placeholder="e.g. Pride and Prejudice" required>
+
+  <label for="isbn">ISBN (optional)</label>
+  <input id="isbn" name="isbn" type="text" placeholder="e.g. 9780141439518">
+
+  <label for="publication_year">Publication Year (optional)</label>
+  <input id="publication_year" name="publication_year" type="text" placeholder="e.g. 1813">
+
+  <label for="author_id">Author</label>
+  <select id="author_id" name="author_id" required>
+    <option value="" disabled selected>Select an author…</option>
+    {% for a in authors %}
+      <option value="{{ a.id }}">{{ a.name }}</option>
+    {% endfor %}
+  </select>
+
+  <button type="submit" {% if not authors %}disabled{% endif %}>Save Book</button>
+</form>
+</body>
+</html>

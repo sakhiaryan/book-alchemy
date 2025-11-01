@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Alchemy – Library</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; }
+    header { display: flex; align-items: center; gap: 12px; }
+    a.button { padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; text-decoration: none; color: #222; }
+    a.button:hover { background: #f5f5f5; }
+    .sort { margin: 16px 0; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border-bottom: 1px solid #eee; padding: 10px; text-align: left; }
+    th { background: #fafafa; }
+    .muted { color: #666; font-size: 0.95rem; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>📚 Book Alchemy</h1>
+  <a class="button" href="{{ url_for('add_author') }}">+ Add Author</a>
+  <a class="button" href="{{ url_for('add_book') }}">+ Add Book</a>
+</header>
+
+<div class="sort">
+  <span class="muted">Sort by:</span>
+  <a class="button" href="{{ url_for('home', sort='title') }}">Title</a>
+  <a class="button" href="{{ url_for('home', sort='author') }}">Author</a>
+  <a class="button" href="{{ url_for('home') }}">Default</a>
+</div>
+
+{% if books %}
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Publication Year</th>
+        <th>ISBN</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for b in books %}
+      <tr>
+        <td>{{ b.title }}</td>
+        <td>{{ b.author.name }}</td>
+        <td>{{ b.publication_year or '—' }}</td>
+        <td>{{ b.isbn or '—' }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="muted">No books yet. Use “Add Author” and then “Add Book”.</p>
+{% endif %}
+</body>
+</html>
