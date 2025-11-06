@@ -1,36 +1,22 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>{{ author.name }} – Author</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-<header>
-  <h1>👤 {{ author.name }}</h1>
-  <nav>
-    <a class="button" href="{{ url_for('home') }}">⬅ Back</a>
-  </nav>
-</header>
-
-<ul class="kv">
-  <li><strong>Born:</strong> {{ author.birth_date or '—' }}</li>
-  <li><strong>Died:</strong> {{ author.date_of_death or '—' }}</li>
-</ul>
-
-<h3>Books</h3>
-{% if author.books %}
-  <ul>
-  {% for b in author.books %}
-    <li><a href="{{ url_for('book_detail', book_id=b.id) }}">{{ b.title }}</a></li>
-  {% endfor %}
-  </ul>
-{% else %}
-  <p>No books by this author.</p>
-{% endif %}
-
-<form method="POST" action="{{ url_for('delete_author', author_id=author.id) }}">
-  <button type="submit" class="delete-btn">Delete Author (and all their books)</button>
+{% extends "base.html" %}
+{% block content %}
+<h2>Add Author</h2>
+<form method="post" class="form">
+  <label>
+    Name
+    <input type="text" name="name" placeholder="Author full name" required>
+  </label>
+  <label>
+    Birth date (YYYY-MM-DD)
+    <input type="text" name="birth_date" placeholder="e.g. 1970-01-31">
+  </label>
+  <label>
+    Date of death (YYYY-MM-DD)
+    <input type="text" name="death_date" placeholder="optional">
+  </label>
+  <div class="form-actions">
+    <button type="submit">Add Author</button>
+    <a class="btn-link" href="{{ url_for('home') }}">Cancel</a>
+  </div>
 </form>
-</body>
-</html>
+{% endblock %}

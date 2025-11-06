@@ -1,79 +1,74 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Book Alchemy – Library</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-<header>
-  <h1>📚 Book Alchemy Library</h1>
-  <nav>
-    <a class="button" href="{{ url_for('add_author') }}">Add Author</a>
-    <a class="button" href="{{ url_for('add_book') }}">Add Book</a>
-    <a class="button" href="{{ url_for('home', sort='title') }}">Sort by Title</a>
-    <a class="button" href="{{ url_for('home', sort='author') }}">Sort by Author</a>
-    <a class="button" href="{{ url_for('recommend') }}">Recommend</a>
-  </nav>
-</header>
+{% extends "base.html" %}
+{% block content %}
+<section class="controls">
+  <form method="get" action="{{ url_for('home') }}" class="search-form">
+    <input type="text" name="q" placeholder="Search title or author..." value="{{ q or '' }}">
+    <select name="sort">
+      <option value="">Sort by…</option>
+      <option value="title" {{ 'selected' if sort=='title' else '' }}>Title</option>
+      <option value="year" {{ 'selected' if sort in ['year','publication_year'] else '' }}>Year</option>
+      <option value="author" {{ 'selected' if sort=='author' else '' }}>Author</option>
+    </select>
+    <select name="direction">
+      <option value="asc" {{ 'selected' if direction!='desc' else '' }}>Asc</option>
+      <option value="desc" {{ 'selected' if direction=='desc' else '' }}>Desc</option>
+    </select>
+    <button type="submit">Apply</button>
+    {% if q %}
+      <a href="{{ url_for('home') }}" class="btn-link">Reset</a>
+    {% endif %}
+  </form>
+</section>
 
-<form method="get" action="{{ url_for('home') }}" class="search-bar">
-  <input type="text" name="q" placeholder="Search by title or author..." value="{{ query }}">
-  <button type="submit">Search</button>
-</form>
+<section class="two-col">
+  <div class="col">
+    <h2>Books</h2>
+    {% if books %}
+      <ul class="card-list">
+        {% for book in books %}
+          <li class="card">
+            <div class="card-title">{{ book.title }}</div>
+            <div class="card-sub">{{ book.author.name if book.author else '—' }}</div>
+            <div class="meta">
+              <span>Year: {{ book.publication_year }}</span>
+              {% if book.isbn %}<span>ISBN: {{ book.isbn }}</span>{% endif %}
+            </div>
+            <div class="actions">
+              <a class="btn" href="{{ url_for('update', book_id=book.id) }}">Edit</a>
+              <form method="post" action="{{ url_for('delete_book', book_id=book.id) }}" onsubmit="return confirm('Delete this book?')" style="display:inline;">
+                <button class="btn danger" type="submit">Delete</button>
+              </form>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No books yet.</p>
+    {% endif %}
+  </div>
 
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class="flash">
-      {% for m in messages %}
-        <li>{{ m }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-
-{% if message %}
-  <p class="msg">{{ message }}</p>
-{% endif %}
-
-{% if books %}
-<table>
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Author</th>
-      <th>Year</th>
-      <th>ISBN</th>
-      <th>Rating</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for b in books %}
-    <tr>
-      <td><a href="{{ url_for('book_detail', book_id=b.id) }}">{{ b.title }}</a></td>
-      <td>
-        {% if b.author %}
-          <a href="{{ url_for('author_detail', author_id=b.author.id) }}">{{ b.author.name }}</a>
-          <form method="POST" action="{{ url_for('delete_author', author_id=b.author.id) }}" style="display:inline;margin-left:6px;">
-            <button type="submit" class="delete-btn small">Del Author</button>
-          </form>
-        {% else %} — {% endif %}
-      </td>
-      <td>{{ b.publication_year or '—' }}</td>
-      <td>{{ b.isbn or '—' }}</td>
-      <td>{{ b.rating or '—' }}</td>
-      <td>
-        <form method="POST" action="{{ url_for('delete_book', book_id=b.id) }}" style="display:inline;">
-          <button type="submit" class="delete-btn">Delete Book</button>
-        </form>
-      </td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<p>No books yet.</p>
-{% endif %}
-</body>
-</html>
+  <div class="col">
+    <h2>Authors</h2>
+    {% if authors %}
+      <ul class="list">
+        {% for a in authors %}
+          <li>
+            <strong>{{ a.name }}</strong>
+            {% if a.birth_date %}
+              <span> ({{ a.birth_date }})</span>
+            {% endif %}
+            {% if a.date_of_death %}
+              <span> – {{ a.date_of_death }}</span>
+            {% endif %}
+            {% if a.books %}
+              <div class="subtle">Books: {{ a.books|length }}</div>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No authors yet.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
